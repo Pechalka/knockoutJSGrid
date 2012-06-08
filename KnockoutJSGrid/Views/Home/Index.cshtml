@@ -30,19 +30,27 @@
 
     <script type="text/html" id="TableHeaders">
         <tr>
-            <th>	<a href="#" data-bind="click: changeSort.bind($data,'FirstName')">First name<a></th>
-            <th>	<a href="#" data-bind="click: changeSort.bind($data, 'LastName')">Last name<a></th>
+            <th class="sorting" data-bind="click: changeSort.bind($data,'FirstName')">First name</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'LastName')">Last name</th>
             <th>	Gender</th>
-            <th>	<a href="#" data-bind="click: changeSort.bind($data, 'Age')">Age<a></th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Age')">Age</th>
         </tr>
     </script>
 
     <script type="text/html" id="PagingPanel">
-    Page <span data-bind="text: PageNumber" /> of <span data-bind="text: TotalPagesCount" />.
-    <br />
-    <a href="#next" data-bind="click: back"><</a>
-     
-    <a href="#next" data-bind="click: next">></a>
+    <div class="row">
+        <div class="span6"><div class="dataTables_info" id="example_info">Page <span data-bind="text: PageNumber" /> of <span data-bind="text: TotalPagesCount" />.</div></div>
+        <div class="span6">
+     <ul class="pager">
+      <li>
+        <a href="#" data-bind="click: back">Previous</a>
+      </li>
+      <li>
+        <a href="#" href="#next" data-bind="click: next">Next</a>
+      </li>
+    </ul>
+        </div>
+    </div>
     </script>
 }
 
@@ -52,19 +60,30 @@
         $(function() {
             var ajaxGrid = new AjaxGridViewModel('@Url.Action("List")', @Html.ToJSON(Model.Filter), @Html.ToJSON(Model.Sort));
 	        ko.applyBindings(ajaxGrid);
+
+            var columns = {
+                'FirstName': 0,
+                'LastName': 1,
+                'Age': 3                
+            };
+            
             ajaxGrid.onSorting = function(sort) {
-                alert(sort.Distinct() + ' ' + sort.Field());
+                //use custome binding
+                var cellNum = columns[sort.Field()];
+                $('table th').removeClass('sorting_asc sorting_desc');
+                $('table th:eq(' + cellNum +')').addClass('sorting_' + sort.Distinct());
             };
         });
     </script>
 }
-
-	<div data-bind="template: {
+<div class="row">
+    <div class="span12">
+  	<div data-bind="template: {
 	    name: 'FiltrationPanel',
 	    data: filterParams}">
 	</div>
 
-    <table>
+    <table class="table table-bordered">
         <thead data-bind="template: {
             name: 'TableHeaders'
         }">
@@ -79,5 +98,9 @@
     <div data-bind="template: {
         name: 'PagingPanel',
         data: paging }">
+    </div>  
+    
     </div>
+</div>
+
 
