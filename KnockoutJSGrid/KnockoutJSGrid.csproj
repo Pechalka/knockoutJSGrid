@@ -44,9 +44,6 @@
       <Private>True</Private>
       <HintPath>..\packages\EntityFramework.4.1.10331.0\lib\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="jQueryTmpl">
-      <HintPath>..\packages\jquery-tmpl.net.0.6\lib\net40\jQueryTmpl.dll</HintPath>
-    </Reference>
     <Reference Include="jQueryTmpl.Mvc">
       <HintPath>..\packages\jquery-tmpl.net.0.6\lib\net40\jQueryTmpl.Mvc.dll</HintPath>
     </Reference>
