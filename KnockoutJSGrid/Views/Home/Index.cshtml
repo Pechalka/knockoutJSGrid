@@ -1,0 +1,84 @@
+﻿@using KnockoutJSGrid
+@using KnockoutJSGrid.Models
+@model KnockoutJSGrid.Controllers.PersonsViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section templates{
+    <script type="text/html" id="FiltrationPanel">
+        <div id="hilterHolder">
+            Age from <input type="text" size="3" data-bind="value: AgeFrom" /> to <input type="text" size="3" data-bind="value: AgeTo" />
+            <br />
+            <label><input type="checkbox" data-bind="checked: ShowMale" />Show male</label> 
+            <br />
+            <label><input type="checkbox" data-bind="checked: ShowFemale" />Show female</label> 
+            <select data-bind="options: Colors, value : SelectedColor, optionsValue: 'Key', optionsText: 'Value'"></select>    
+        </div>
+        <input type="button" id="switcher" value="ggg"/>
+    </script>
+
+    <script type="text/html" id="TableRow">
+        <tr>
+            <td data-bind="text: FirstName"></td>
+            <td data-bind="text: LastName"></ td>
+            <td data-bind="text: Gender"></td>
+            <td data-bind="text: Age"></td>
+        </tr>
+    </script>
+
+    <script type="text/html" id="TableHeaders">
+        <tr>
+            <th>	<a href="#" data-bind="click: changeSort.bind($data,'FirstName')">First name<a></th>
+            <th>	<a href="#" data-bind="click: changeSort.bind($data, 'LastName')">Last name<a></th>
+            <th>	Gender</th>
+            <th>	<a href="#" data-bind="click: changeSort.bind($data, 'Age')">Age<a></th>
+        </tr>
+    </script>
+
+    <script type="text/html" id="PagingPanel">
+    Page <span data-bind="text: PageNumber" /> of <span data-bind="text: TotalPagesCount" />.
+    <br />
+    <a href="#next" data-bind="click: back"><</a>
+     
+    <a href="#next" data-bind="click: next">></a>
+    </script>
+}
+
+@section scripts{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/sammy/sammy.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/AjaxGridViewModel.js")"></script>
+    <script type="text/javascript">
+        $(function() {
+            var ajaxGrid = new AjaxGridViewModel('@Url.Action("List")', @Html.ToJSON(Model.Filter), @Html.ToJSON(Model.Sort));
+	        ko.applyBindings(ajaxGrid);
+            ajaxGrid.onSorting = function(sort) {
+                alert(sort.Distinct() + ' ' + sort.Field());
+            };
+        });
+    </script>
+}
+
+	<div data-bind="template: {
+	    name: 'FiltrationPanel',
+	    data: filterParams}">
+	</div>
+
+    <table>
+        <thead data-bind="template: {
+            name: 'TableHeaders'
+        }">
+        </thead>
+        <tbody data-bind="template: {
+            name: 'TableRow',
+            foreach: rows
+        }">
+        </tbody>
+    </table>
+
+    <div data-bind="template: {
+        name: 'PagingPanel',
+        data: paging }">
+    </div>
+

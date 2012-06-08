@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section templates{
+    <script id="creditorsTmpl" type="text/html">
+        <select data-bind="options: creditors, optionsValue: 'AccountNumber', optionsText: 'NameOnAgreement'"></select>        
+
+    </script>​
+
+}
+
+
+@section scripts{
+    <script type="text/javascript">
+
+        var creditorData = {
+            "name": "dfsg",
+            "age" : 14,
+            "creditors": [{
+                "DebtSolutionCreditorId": 3,
+                "AccountNumber": "123456",
+                "AmountOwed": 1000,
+                "LenderId": 48,
+                "NameOnAgreement": "test name",
+                "Repayment": 200
+            },
+                {
+                    "DebtSolutionCreditorId": 4,
+                    "AccountNumber": "123456",
+                    "AmountOwed": 6000,
+                    "LenderId": 3,
+                    "NameOnAgreement": "test name",
+                    "Repayment": 200
+                }]
+        };
+
+    var creditorModel = ko.mapping.fromJS(creditorData);
+
+    $(function() {
+        ko.applyBindings(creditorModel);
+    });
+
+
+    </script>
+
+}
+
+<div data-bind="template: { name: 'creditorsTmpl' }"></div>
+
