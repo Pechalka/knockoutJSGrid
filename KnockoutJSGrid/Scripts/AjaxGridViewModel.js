@@ -1,4 +1,5 @@
 ﻿var AjaxGridViewModel = function (url, filterParams, sort) {
+    var self = this;
     this.rows = ko.observableArray();
     this.filterParams = ko.mapping.fromJS(filterParams);
 
@@ -15,30 +16,37 @@
         }
     };
 
-    this.sort = ko.mapping.fromJS(sort);
-    this.onSorting = function (newSorting) {
-
-    };
-
-    this.changeSort = function (newSort) {
-        if (newSort == this.sort.Field()) {
-            var newDist = this.sort.Distinct() == 'asc' ? 'desc' : 'asc';
-            this.sort.Distinct(newDist);
+    this.sorting = ko.mapping.fromJS(sort);
+    this.checkSort = function (fieldSort) {
+        if (this.sorting.Field() == fieldSort) {
+            return this.sorting.Distinct() == 'asc' ? 'sorting_desc' : 'sorting_asc';
         }
-        this.sort.Field(newSort);
-        this.onSorting(this.sort);
+        return '';
     };
 
-    ko.dependentObservable(function () {
-        ko.toJS(this.filterParams);
-        this.paging.PageNumber(1);
-    }, this);
+    ko.bindingHandlers.sort = {
+        init: function (element, valueAccessor) {
+            $(element).click(function () {
+                var field = valueAccessor();
+                var dist = self.sorting.Distinct();
+                if (field == self.sorting.Field()) {
+                    self.sorting.Distinct(dist == 'asc' ? 'desc' : 'asc');
+                }
+                else {
+                    //fix 2 request 
+                    ko.utils.unwrapObservable(self.sorting.Distinct('asc'));
+                    self.sorting.Field(field);
+                }
+            });
+        }
+    };
+
+
 
     ko.dependentObservable(function () {
         var data = ko.utils.unwrapObservable(this.filterParams);
         data.pageNumber = this.paging.PageNumber();
-        data.sort = ko.toJS(this.sort);
-        debugger;
+        data.sort = ko.toJS(this.sorting);
         $.ajax({
             url: url,
             type: 'POST',
@@ -54,7 +62,12 @@
         location.hash = this.paging.PageNumber();
     }, this);
 
-    var self = this;
+    ko.dependentObservable(function () {
+        ko.toJS(this.filterParams);
+        this.paging.PageNumber(1);
+    }, this);
+
+
     Sammy(function () {
         this.get('#:page', function () {
             var page = parseInt(this.params.page, 10);
@@ -62,4 +75,18 @@
         });
 
     }).run();
+};
+
+
+
+
+ko.bindingHandlers['class'] = {
+    'update': function (element, valueAccessor) {
+        if (element['__ko__previousClassValue__']) {
+            $(element).removeClass(element['__ko__previousClassValue__']);
+        }
+        var value = ko.utils.unwrapObservable(valueAccessor());
+        $(element).addClass(value);
+        element['__ko__previousClassValue__'] = value;
+    }
 };

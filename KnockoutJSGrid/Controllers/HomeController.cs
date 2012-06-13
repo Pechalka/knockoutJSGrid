@@ -85,8 +85,22 @@ namespace KnockoutJSGrid.Controllers
 
         public ActionResult Test()
         {
-            return View();
+            var data = new TestViewModel
+                           {
+                               Items = new List<KeyValuePair<string, string>>
+                                           {
+                                               new KeyValuePair<string, string>("key1", "value1"),
+                                               new KeyValuePair<string, string>("key2", "value2"),
+                                               new KeyValuePair<string, string>("key3", "value3"),
+                                           }
+                           };
+            return View(data);
         }
+    }
+
+    public class TestViewModel
+    {
+        public List<KeyValuePair<string, string>> Items { get; set; }
     }
 
     public class PersonsViewModel

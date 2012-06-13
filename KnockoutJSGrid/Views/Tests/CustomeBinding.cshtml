@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "CustomeBinding";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script type="text/javascript">
+        ko.bindingHandlers.sort = {
+            init: function (element, valueAccessor, allBindingsAccessor, viewModel) {
+                $(element).click(function () {
+                    var newSort = valueAccessor();
+                    var dist = viewModel.Distance();
+                    if (newSort == viewModel.Sorting()) {
+                        viewModel.Distance(dist == 'asc' ? 'desc' : 'asc');
+                    }
+                    else {
+                        viewModel.Distance('asc');
+                        viewModel.Sorting(newSort);
+                    }
+                });
+            }
+        };
+
+        ko.bindingHandlers['class'] = {
+            'update': function (element, valueAccessor) {
+                if (element['__ko__previousClassValue__']) {
+                    $(element).removeClass(element['__ko__previousClassValue__']);
+                }
+                var value = ko.utils.unwrapObservable(valueAccessor());
+                $(element).addClass(value);
+                element['__ko__previousClassValue__'] = value;
+            }
+        };
+
+        $(function () {
+            var viewModel = {
+                Sorting: ko.observable('FirstName'),
+                Distance: ko.observable('asc')
+            };
+            
+            viewModel.checkSort = function (fieldSort) {
+                if (viewModel.Sorting() == fieldSort) {
+                    return viewModel.Distance() == 'asc' ? 'sorting_desc' : 'sorting_asc';
+                }
+                return '';
+            };
+
+            ko.applyBindings(viewModel);
+        });
+    </script>
+
+}
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th class="sorting" data-bind="sort : 'FirstName', class : checkSort('FirstName')" >First Name</th>
+            <th class="sorting" data-bind="sort : 'LastName', class : checkSort('LastName')">Last Name</th>
+            <th class="sorting" data-bind="sort : 'Age', class : checkSort('Age')">Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Vasa</td>
+            <td>Ivanov</td>
+            <td>12</td>
+        </tr>
+    </tbody>
+    <tbody>
+    </tbody>
+</table>
+
+<div data-bind="text : ko.toJSON($root)"> </div>

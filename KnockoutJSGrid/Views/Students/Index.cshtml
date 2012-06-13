@@ -1,39 +1,41 @@
-﻿@using KnockoutJSGrid
+﻿@model StudentViewModel
+@using KnockoutJSGrid
 @using KnockoutJSGrid.Models
-@model KnockoutJSGrid.Controllers.PersonsViewModel
-
 @{
+    ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
 @section templates{
     <script type="text/html" id="FiltrationPanel">
-        <div id="hilterHolder">
-            Age from <input type="text" size="3" data-bind="value: AgeFrom" /> to <input type="text" size="3" data-bind="value: AgeTo" />
-            <br />
-            <label><input type="checkbox" data-bind="checked: ShowMale" />Show male</label> 
-            <br />
-            <label><input type="checkbox" data-bind="checked: ShowFemale" />Show female</label> 
-            <select data-bind="options: Colors, value : SelectedColor, optionsValue: 'Key', optionsText: 'Value'"></select>    
+        <div class="span9">
+            Filter
         </div>
-        <input type="button" id="switcher" value="ggg"/>
+        <div class="span3">
+            Button
+        </div>
     </script>
 
     <script type="text/html" id="TableRow">
         <tr>
-            <td data-bind="text: FirstName"></td>
-            <td data-bind="text: LastName"></ td>
-            <td data-bind="text: Gender"></td>
-            <td data-bind="text: Age"></td>
+            <td data-bind="text: Code"></td>
+            <td data-bind="text: Name"></ td>
+            <td data-bind="text: Grage"></ td>
+            <td data-bind="text: Record"></ td>
+            <td data-bind="text: Teacher"></ td>
+            <td data-bind="text: Status"></ td>
         </tr>
     </script>
 
     <script type="text/html" id="TableHeaders">
         <tr>
-            <th class="sorting" data-bind="sort: 'FirstName', class : checkSort('FirstName')">First name</th>
-            <th class="sorting" data-bind="sort: 'LastName', class : checkSort('LastName')">Last name</th>
-            <th>	Gender</th>
-            <th class="sorting" data-bind="sort: 'Age', class : checkSort('Age')">Age</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Code')">Code</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Name')">Name</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Grage')" >Grage</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Record')">Record</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Teacher')">Teacher</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Status')">Status</th>
         </tr>
     </script>
 
@@ -58,11 +60,15 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/AjaxGridViewModel.js")"></script>
     <script type="text/javascript">
         $(function() {
-            var ajaxGrid = new AjaxGridViewModel('@Url.Action("List")', @Html.ToJSON(Model.Filter), @Html.ToJSON(Model.Sort));
+            var ajaxGrid = new AjaxGridViewModel('@Url.Action("UpdateGrid")', @Html.ToJSON(Model.Filter), @Html.ToJSON(Model.Sort));
+            
             ajaxGrid.columns = {
-                'FirstName': 0,
-                'LastName': 1,
-                'Age': 3                
+                'Code': 0,
+                'Name': 1,
+                'Grage': 2,
+                'Record': 3,
+                'Teacher' : 4,
+                'Status' : 5
             };
             
 	        ko.applyBindings(ajaxGrid);
@@ -70,8 +76,13 @@
     </script>
 }
 <div class="row">
+    <div class="span6" ><h2>Students</h2></div>
+    <div class="span6" ><input type="button" class="btn btn-large" style="float: right; margin: 5px;" value="Add Student"/></div>
+</div>
+
+<div class="row">
     <div class="span12">
-  	<div data-bind="template: {
+  	<div class="row" data-bind="template: {
 	    name: 'FiltrationPanel',
 	    data: filterParams}">
 	</div>
@@ -95,5 +106,6 @@
     
     </div>
 </div>
+
 
 

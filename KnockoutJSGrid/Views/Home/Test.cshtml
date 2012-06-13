@@ -1,12 +1,23 @@
-﻿@{
+﻿@using KnockoutJSGrid
+@using KnockoutJSGrid.Controllers
+@model TestViewModel
+@{
     ViewBag.Title = "Test";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @section templates{
     <script id="creditorsTmpl" type="text/html">
-        <select data-bind="options: creditors, optionsValue: 'AccountNumber', optionsText: 'NameOnAgreement'"></select>        
-
+    <p>
+    Your country: 
+    <select data-bind="options: Items,  optionsText: 'Value', value: selectedCountry, optionsCaption: 'All'"></select>
+</p>
+ 
+<div data-bind="visible: selectedCountry"> <!-- Appears when you select something -->
+    You have chosen a country with population 
+    <span data-bind="text: selectedCountry() ? selectedCountry().Value : 'unknown'"></span>.
+</div>
+<a href="#" data-bind="click: click">test</a>
     </script>​
 
 }
@@ -14,38 +25,20 @@
 
 @section scripts{
     <script type="text/javascript">
-
-        var creditorData = {
-            "name": "dfsg",
-            "age" : 14,
-            "creditors": [{
-                "DebtSolutionCreditorId": 3,
-                "AccountNumber": "123456",
-                "AmountOwed": 1000,
-                "LenderId": 48,
-                "NameOnAgreement": "test name",
-                "Repayment": 200
-            },
-                {
-                    "DebtSolutionCreditorId": 4,
-                    "AccountNumber": "123456",
-                    "AmountOwed": 6000,
-                    "LenderId": 3,
-                    "NameOnAgreement": "test name",
-                    "Repayment": 200
-                }]
+        var viewModel = ko.mapping.fromJS(@Html.ToJSON(Model));
+        viewModel.selectedCountry = ko.observable();
+        viewModel.click = function () {
+            alert(viewModel.selectedCountry().Value());
         };
-
-    var creditorModel = ko.mapping.fromJS(creditorData);
-
-    $(function() {
-        ko.applyBindings(creditorModel);
-    });
-
-
+        
+        
+        $(function () {
+            ko.applyBindings(viewModel);
+        });
     </script>
 
 }
+
 
 <div data-bind="template: { name: 'creditorsTmpl' }"></div>
 
