@@ -10,20 +10,47 @@ namespace KnockoutJSGrid.Controllers
     public class HomeController : Controller
     {
         public CQRSQuery Query = new CQRSQuery();
-        private readonly IDefaultValueFor<PersonsViewModel> _personsViewModel;
 
-        public HomeController(IDefaultValueFor<PersonsViewModel> personsViewModel)
+        private PersonsViewModel defaultPersonsViewModel()
         {
-            _personsViewModel = personsViewModel;
+            var colors = new[]
+                             {
+                                 new KeyValuePair<string, string>("1", "Black"),
+                                 new KeyValuePair<string, string>("2", "Red"),
+                                 new KeyValuePair<string, string>("3", "Green"), 
+                             };
+            var filter = new FilterParams
+            {
+                Colors = colors,
+                SelectedColor = "2"
+            };
+            var sort = new Sorting
+            {
+                Field = "FirstName",
+                Distinct = "asc"
+            };
+
+            return new PersonsViewModel
+            {
+                Filter = filter,
+                Sort = sort
+            };
         }
 
         public ActionResult Index()
         {
-            var viewMoel = _personsViewModel.DefaultValue();
+            var viewMoel = defaultPersonsViewModel();
             return View(viewMoel);
-		}
+        }
 
+        //TODO : impliment binding
+        //public ActionResult Index(IDefaultValueFor<PersonsViewModel> defaultViewModel)
+        //{
+        //    var viewMoel = defaultViewModel.DefaultValue();
+        //    return View(viewMoel);
+        //}
 
+ 
         public ActionResult List(Sorting sort, FilterParams filterParams, int pageNumber = 1)
         {
             var onePageOfPersons = Query
