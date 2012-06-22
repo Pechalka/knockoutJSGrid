@@ -56,4 +56,11 @@ namespace KnockoutJSGrid.Models
         public string Field { get; set; }
         public string Distinct { get; set; } // asc desc
     }
+
+
+
+    public class Entity
+    {
+        public Guid Id { get; set; }
+    }
 }

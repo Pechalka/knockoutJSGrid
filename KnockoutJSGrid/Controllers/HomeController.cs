@@ -1,112 +1,119 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using KnockoutJSGrid.Models;
+using MongoDB.Driver;
+using MongoDB.Driver.Builders;
 
 namespace KnockoutJSGrid.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IPersonRepository _personRepository;
+        public CQRSQuery Query = new CQRSQuery();
+        private readonly IDefaultValueFor<PersonsViewModel> _personsViewModel;
 
-        public HomeController(IPersonRepository personRepository)
+        public HomeController(IDefaultValueFor<PersonsViewModel> personsViewModel)
         {
-            _personRepository = personRepository;
+            _personsViewModel = personsViewModel;
         }
 
-		public ActionResult Index()
-		{
-		    var colors = new KeyValuePair<string, string>[]
-		                     {
-		                         new KeyValuePair<string, string>("1", "Black"),
-		                         new KeyValuePair<string, string>("2", "Red"),
-		                         new KeyValuePair<string, string>("3", "Green"), 
-		                     };
-		    var filter = new FilterParams
-		                     {
-		                         Colors = colors,
-		                         SelectedColor = "2"
-		                     };
-		    var sort = new Sorting
-		                   {
-                               Field = "FirstName",
-                               Distinct = "asc"
-		                   };
-
-			return View(new PersonsViewModel
-			                {
-			                    Filter = filter,
-                                Sort = sort
-			                });
+        public ActionResult Index()
+        {
+            var viewMoel = _personsViewModel.DefaultValue();
+            return View(viewMoel);
 		}
 
-        private Func<Person, bool> CreateSpecification(FilterParams filterParams)//TODO: use Specification pattern, fix filter
-        {
-            if (filterParams.AgeFrom.HasValue)
-            {
-                return r => r.Age >= filterParams.AgeFrom;
-            }
-            if (filterParams.AgeTo.HasValue)
-            {
-                return r => r.Age <= filterParams.AgeTo;
-            }
-            var genderToShow = new List<Gender>();
-            if (filterParams.ShowFemale)
-            {
-                genderToShow.Add(Gender.Female);
-            }
-            if (filterParams.ShowMale)
-            {
-                genderToShow.Add(Gender.Male);
-            }
-
-            return r => genderToShow.Contains(r.Gender);
-        }
 
         public ActionResult List(Sorting sort, FilterParams filterParams, int pageNumber = 1)
         {
-            Func<Person, bool> specification = CreateSpecification(filterParams);
+            var onePageOfPersons = Query
+                .ForQueryable<Person>()
+                .With(filterParams)
+                .OrderBy(sort)
+                .GetPage(pageNumber, 10);
 
-            var totalItemsCount = _personRepository.Persons.Where(specification).Count();
-            var paging = new Paging
-            {
-                PageNumber = pageNumber,
-                TotalItemsCount = totalItemsCount
-            };
-            var persons =
-                _personRepository.Persons.Where(specification)
-                .Skip((pageNumber - 1) * paging.PageSize).Take(paging.PageSize)
-                .ToList();
-            
-
-            return Json(new PageOf<Person> { Data = persons, Paging = paging });
+            return Json(onePageOfPersons);
         }
+    }
 
-        public ActionResult Test()
+    public interface IDefaultValueFor<TObject>
+    {
+        TObject DefaultValue();
+    }
+
+
+    public class DefaultValueStorage : IDefaultValueFor<PersonsViewModel>
+    {
+        public PersonsViewModel DefaultValue()
         {
-            var data = new TestViewModel
-                           {
-                               Items = new List<KeyValuePair<string, string>>
-                                           {
-                                               new KeyValuePair<string, string>("key1", "value1"),
-                                               new KeyValuePair<string, string>("key2", "value2"),
-                                               new KeyValuePair<string, string>("key3", "value3"),
-                                           }
-                           };
-            return View(data);
+            var colors = new[]
+                             {
+                                 new KeyValuePair<string, string>("1", "Black"),
+                                 new KeyValuePair<string, string>("2", "Red"),
+                                 new KeyValuePair<string, string>("3", "Green"), 
+                             };
+            var filter = new FilterParams
+                             {
+                                 Colors = colors,
+                                 SelectedColor = "2"
+                             };
+            var sort = new Sorting
+            {
+                Field = "FirstName",
+                Distinct = "asc"
+            };
+
+            return new PersonsViewModel
+            {
+                Filter = filter,
+                Sort = sort
+            };
         }
     }
 
-    public class TestViewModel
+
+    public class FindPersonsQuery : BaseMongoQuery<Person, FilterParams>
     {
-        public List<KeyValuePair<string, string>> Items { get; set; }
+        protected override IMongoQuery buildQuery(FilterParams filter)
+        {
+            IMongoQuery query = base.buildQuery(filter);
+
+            if (filter.AgeFrom.HasValue)
+                query = Query.And(query, Query.GT("Age", filter.AgeFrom));
+
+            if (filter.AgeTo.HasValue)
+                query = Query.And(query, Query.LTE("Age", filter.AgeTo));
+
+            return query;
+        }
     }
 
-    public class PersonsViewModel
+    public class BaseMongoQuery<TItem, TFilter> : BaseMongoQuery, IQuery<IQueryable<TItem>, TFilter> 
     {
-        public FilterParams Filter { get; set; }
-        public Sorting Sort { get; set; }
+        public virtual IQueryable<TItem> Execute(TFilter filter)
+        {
+            var query = buildQuery(filter);
+            return GetCollection<TItem>().Find(query).AsQueryable();
+        }
+
+        protected virtual IMongoQuery buildQuery(TFilter filter)
+        {
+            return Query.Exists("_id", true);
+        }
     }
+
+    public class BaseMongoQuery
+    {
+        public static MongoCollection<TCollection> GetCollection<TCollection>(string collectionName = null)
+        {
+            var server = MongoServer.Create();
+            var database = server.GetDatabase("Persons");
+
+            if (collectionName == null)
+                collectionName = typeof(TCollection).Name + "s";
+            return database.GetCollection<TCollection>(collectionName);
+        }
+    }
+
 }
 

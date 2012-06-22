@@ -48,9 +48,9 @@ namespace KnockoutJSGrid.Models
         public string SelectedColor { get; set; }
     }
 
-    public interface IPersonRepository
+    public class PersonsViewModel
     {
-        IQueryable<Person> Persons { get; }
-        void Save(Person person);
+        public FilterParams Filter { get; set; }
+        public Sorting Sort { get; set; }
     }
 }

@@ -9,23 +9,23 @@ using Castle.Windsor;
 
 namespace KnockoutJSGrid.Models
 {
-    public class WindsorDependencyResolver : System.Web.Mvc.IDependencyResolver
+    public class WindsorDependencyResolver : IDependencyResolver
     {
-        private readonly IWindsorContainer _container;
+        private readonly IWindsorContainer container;
 
         public WindsorDependencyResolver(IWindsorContainer container)
         {
-            _container = container;
+            this.container = container;
         }
 
         public object GetService(Type serviceType)
         {
-            return _container.Resolve(serviceType);
+            return container.Kernel.HasComponent(serviceType) ? container.Resolve(serviceType) : null;
         }
 
         public IEnumerable<object> GetServices(Type serviceType)
         {
-            return _container.ResolveAll(serviceType).Cast<object>();
+            return container.Kernel.HasComponent(serviceType) ? container.ResolveAll(serviceType).Cast<object>() : new object[] { };
         }
     }
 

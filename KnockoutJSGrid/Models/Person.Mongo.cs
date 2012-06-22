@@ -5,20 +5,6 @@ using MongoDB.Driver;
 
 namespace KnockoutJSGrid.Models
 {
-    public class PersonRepository : MongoRepository<Person>, IPersonRepository
-    {
-        public PersonRepository(string databaseName, string collectionName)
-            : base(databaseName, collectionName)
-        {
-        }
-
-        public IQueryable<Person> Persons
-        {
-            get { return Items; }
-        }
-    }
-
-
     public class PersonsGenerator
     {
         #region Initialization

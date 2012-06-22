@@ -85,9 +85,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="JSONHelpers.cs" />
+    <Compile Include="LinqExtention.cs" />
     <Compile Include="Models\Infrastructure.cs" />
     <Compile Include="Models\Infrastructure.Mmvc.cs" />
-    <Compile Include="Models\Infrastructure.Mongo.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Person.Mongo.cs" />
     <Compile Include="Models\Student.cs" />
@@ -203,6 +203,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Tests\CustomeBinding.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\Infrastructure.CQRS.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

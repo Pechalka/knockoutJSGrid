@@ -1,7 +1,9 @@
-﻿using System.Web.Mvc;
+﻿using System.Linq;
+using System.Web.Mvc;
 using System.Web.Routing;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using KnockoutJSGrid.Controllers;
 using KnockoutJSGrid.Models;
 
 namespace KnockoutJSGrid
@@ -38,17 +40,19 @@ namespace KnockoutJSGrid
             var container = new WindsorContainer();
 
             container.Register(
-                Component.For<IPersonRepository>().ImplementedBy<PersonRepository>().
-                DependsOn(Property.ForKey("databaseName").Eq("Persons")).
-                DependsOn(Property.ForKey("collectionName").Eq("Persons"))
+                Component.For<IQuery<IQueryable<Person>, FilterParams>>().ImplementedBy<FindPersonsQuery>(),
+                Component.For<IDefaultValueFor<PersonsViewModel>>().ImplementedBy<DefaultValueStorage>()
                 );
 
 
+            DependencyResolver.SetResolver(new WindsorDependencyResolver(container));
             ControllerBuilder.Current.SetControllerFactory(new CastleControllerFactory(container));
-
+            
 
             PersonsGenerator.MakeTestData();
         }
     }
+
+
 }
 
