@@ -43,38 +43,43 @@
 
 
 
-    ko.dependentObservable(function () {
-        var data = ko.utils.unwrapObservable(this.filterParams);
+    ko.computed(function () {
+        debugger;
+        var data = { };// ko.utils.unwrapObservable(this.filterParams);
         data.pageNumber = this.paging.PageNumber();
-        data.sort = ko.toJS(this.sorting);
+        //   data.sort = ko.toJS(this.sorting);
         $.ajax({
             url: url,
             type: 'POST',
             data: ko.toJSON(data),
             context: this,
             contentType: 'application/json',
-            success: function (data) {
-                this.rows(data.Data);
-                this.paging.PageNumber(data.Paging.PageNumber);
-                this.paging.TotalPagesCount(data.Paging.TotalPagesCount);
+            success: function (response) {
+                this.rows(response.Data);
+                this.paging.PageNumber(response.Paging.PageNumber);
+                this.paging.TotalPagesCount(response.Paging.TotalPagesCount);
             }
         });
-        location.hash = this.paging.PageNumber();
-    }, this);
-
-    ko.dependentObservable(function () {
-        ko.toJS(this.filterParams);
-        this.paging.PageNumber(1);
-    }, this);
+        // location.hash = this.paging.PageNumber();
+    }, self);
 
 
-    Sammy(function () {
-        this.get('#:page', function () {
-            var page = parseInt(this.params.page, 10);
-            self.paging.PageNumber(page);
-        });
+    //    ko.computed(function () {
+    //        ko.toJS(this.filterParams);
+    //        this.paging.PageNumber(1);
 
-    }).run();
+    //        debugger;
+    //    }, this);
+
+    //    Sammy(function () {
+    //        this.get('#:page', function () {
+    //            debugger;
+    //            var page = parseInt(this.params.page, 10);
+    //            self.paging.PageNumber(page);
+
+    //        });
+
+    //    }).run();
 };
 
 

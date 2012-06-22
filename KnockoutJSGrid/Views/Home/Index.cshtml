@@ -4,6 +4,7 @@
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Persons";
 }
 
 @section templates{
@@ -59,12 +60,6 @@
     <script type="text/javascript">
         $(function() {
             var ajaxGrid = new AjaxGridViewModel('@Url.Action("List")', @Html.ToJSON(Model.Filter), @Html.ToJSON(Model.Sort));
-            ajaxGrid.columns = {
-                'FirstName': 0,
-                'LastName': 1,
-                'Age': 3                
-            };
-            
 	        ko.applyBindings(ajaxGrid);
         });
     </script>

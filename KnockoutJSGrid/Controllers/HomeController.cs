@@ -56,7 +56,7 @@ namespace KnockoutJSGrid.Controllers
             var onePageOfPersons = Query
                 .ForQueryable<Person>()
                 .With(filterParams)
-                .OrderBy(sort)
+              //  .OrderBy(sort)
                 .GetPage(pageNumber, 10);
 
             return Json(onePageOfPersons);
