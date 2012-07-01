@@ -1,0 +1,66 @@
+﻿@model TestViewModel
+
+
+@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@section scripts{
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/bootstrap.validate.fix.js")" type="text/javascript"></script>
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal" }))
+ {
+		
+       @Html.ValidationSummary(true, "Невозможно создать запись", new { @class = "alert alert-error" })
+        <fieldset>
+			<legend>TestViewModel</legend>
+            
+			<div class="control-group">
+				<div class="controls">
+					@Html.HiddenFor(model => model.Id)
+				</div>
+			</div>
+			<div class="control-group">
+				@Html.LabelFor(model => model.Date, new { @class = "control-label" })
+				<div class="controls">
+					@Html.EditorFor(model => model.Date)
+					@Html.ValidationMessageFor(model => model.Date, null, new { @class = "help-inline" })
+				</div>
+			</div>
+
+			<div class="control-group">
+				@Html.LabelFor(model => model.Text, new { @class = "control-label" })
+				<div class="controls">
+					@Html.EditorFor(model => model.Text)
+					@Html.ValidationMessageFor(model => model.Text, null, new { @class = "help-inline" })
+				</div>
+			</div>
+
+			<div class="control-group @(ViewData.ModelState.IsValidField("Name") ? "" : "error")">
+				@Html.LabelFor(model => model.Name, new { @class = "control-label" })
+				<div class="controls">
+					@Html.EditorFor(model => model.Name)
+					@Html.ValidationMessageFor(model => model.Name, null, new { @class = "help-inline" })
+				</div>
+			</div>
+
+			<div class="control-group @(ViewData.ModelState.IsValidField("Age") ? "" : "error")">
+				@Html.LabelFor(model => model.Age, new { @class = "control-label" })
+				<div class="controls">
+					@Html.EditorFor(model => model.Age)
+					@Html.ValidationMessageFor(model => model.Age, null, new { @class = "help-inline" })
+				</div>
+			</div>
+
+		<div class="form-actions">
+				<input type="submit" class="btn btn-primary" value="Submit" />
+		</div>
+	</fieldset>
+    
+ }
