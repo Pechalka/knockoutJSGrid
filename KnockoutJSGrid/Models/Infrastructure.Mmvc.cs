@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
+using KnockoutJSGrid.Controllers;
 
 namespace KnockoutJSGrid.Models
 {
@@ -53,6 +54,27 @@ namespace KnockoutJSGrid.Models
             {
                 return base.GetControllerInstance(requestContext, controllerType);
             }
+        }
+    }
+
+
+    public class DIModelBinder : DefaultModelBinder
+    {
+        protected override object CreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, System.Type modelType)
+        {
+            var factory =  getService(modelType);
+            if (factory == null)
+                return base.CreateModel(controllerContext, bindingContext, modelType);
+
+            var defaultValue = factory.DefaultValue();
+            return defaultValue ??
+                base.CreateModel(controllerContext, bindingContext, modelType);
+        }
+
+        private IDefaultValueFor<object> getService(Type modelType)
+        {
+            var type = typeof (IDefaultValueFor<>).MakeGenericType(modelType);
+            return DependencyResolver.Current.GetService(type) as IDefaultValueFor<object>;
         }
     }
 }

@@ -11,44 +11,13 @@ namespace KnockoutJSGrid.Controllers
     {
         public CQRSQuery Query = new CQRSQuery();
 
-        private PersonsViewModel defaultPersonsViewModel()
-        {
-            var colors = new[]
-                             {
-                                 new KeyValuePair<string, string>("1", "Black"),
-                                 new KeyValuePair<string, string>("2", "Red"),
-                                 new KeyValuePair<string, string>("3", "Green"), 
-                             };
-            var filter = new FilterParams
-            {
-                Colors = colors,
-                SelectedColor = "2"
-            };
-            var sort = new Sorting
-            {
-                Field = "FirstName",
-                Distinct = "asc"
-            };
 
-            return new PersonsViewModel
-            {
-                Filter = filter,
-                Sort = sort
-            };
+
+        public ActionResult Index(PersonsViewModel defaultViewModel)
+        {
+            return View(defaultViewModel);
         }
 
-        public ActionResult Index()
-        {
-            var viewMoel = defaultPersonsViewModel();
-            return View(viewMoel);
-        }
-
-        //TODO : impliment binding
-        //public ActionResult Index(IDefaultValueFor<PersonsViewModel> defaultViewModel)
-        //{
-        //    var viewMoel = defaultViewModel.DefaultValue();
-        //    return View(viewMoel);
-        //}
 
  
         public ActionResult List(Sorting sort, FilterParams filterParams, int pageNumber = 1)
@@ -63,7 +32,7 @@ namespace KnockoutJSGrid.Controllers
         }
     }
 
-    public interface IDefaultValueFor<TObject>
+    public interface IDefaultValueFor<out TObject>
     {
         TObject DefaultValue();
     }
@@ -141,6 +110,9 @@ namespace KnockoutJSGrid.Controllers
             return database.GetCollection<TCollection>(collectionName);
         }
     }
+
+
+
 
 }
 

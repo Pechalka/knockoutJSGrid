@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Castle.MicroKernel.Registration;
@@ -42,14 +43,42 @@ namespace KnockoutJSGrid
             container.Register(
                 Component.For<IQuery<IQueryable<Person>, FilterParams>>().ImplementedBy<FindPersonsQuery>(),
                 Component.For<IDefaultValueFor<PersonsViewModel>>().ImplementedBy<DefaultValueStorage>()
-                );
 
+                );
 
             DependencyResolver.SetResolver(new WindsorDependencyResolver(container));
             ControllerBuilder.Current.SetControllerFactory(new CastleControllerFactory(container));
             
+            ModelBinders.Binders.DefaultBinder = new DIModelBinder();
 
             PersonsGenerator.MakeTestData();
+
+        }
+
+        private PersonsViewModel defaultPersonsViewModel()
+        {
+            var colors = new[]
+                             {
+                                 new KeyValuePair<string, string>("1", "Black"),
+                                 new KeyValuePair<string, string>("2", "Red"),
+                                 new KeyValuePair<string, string>("3", "Green"), 
+                             };
+            var filter = new FilterParams
+            {
+                Colors = colors,
+                SelectedColor = "2"
+            };
+            var sort = new Sorting
+            {
+                Field = "FirstName",
+                Distinct = "asc"
+            };
+
+            return new PersonsViewModel
+            {
+                Filter = filter,
+                Sort = sort
+            };
         }
     }
 
