@@ -94,7 +94,7 @@ namespace KnockoutJSGrid.Controllers
 
         protected virtual IMongoQuery buildQuery(TFilter filter)
         {
-            return Query.Exists("_id", true);
+            return Query.Exists("_id");
         }
     }
 
