@@ -56,7 +56,7 @@ namespace KnockoutJSGrid.Models
 
         public static void MakeTestData()
         {
-            var server = MongoServer.Create();
+            var server = MongoServer.Create(Configuration.DataBaseConnectionString);
             var database = server.GetDatabase("Persons");
             var collection = database.GetCollection<Person>("Persons");
             collection.RemoveAll();

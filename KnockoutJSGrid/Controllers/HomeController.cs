@@ -25,7 +25,7 @@ namespace KnockoutJSGrid.Controllers
             var onePageOfPersons = Query
                 .ForQueryable<Person>()
                 .With(filterParams)
-              //  .OrderBy(sort)
+                //.OrderBy(sort)
                 .GetPage(pageNumber, 10);
 
             return Json(onePageOfPersons);
@@ -102,7 +102,7 @@ namespace KnockoutJSGrid.Controllers
     {
         public static MongoCollection<TCollection> GetCollection<TCollection>(string collectionName = null)
         {
-            var server = MongoServer.Create();
+            var server = MongoServer.Create(Configuration.DataBaseConnectionString);
             var database = server.GetDatabase("Persons");
 
             if (collectionName == null)
