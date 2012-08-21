@@ -33,8 +33,7 @@
                     self.sorting.Distinct(dist == 'asc' ? 'desc' : 'asc');
                 }
                 else {
-                    //fix 2 request 
-                    ko.utils.unwrapObservable(self.sorting.Distinct('asc'));
+                    self.sorting.Distinct('asc');
                     self.sorting.Field(field);
                 }
             });
@@ -43,11 +42,12 @@
 
 
 
+
     ko.computed(function () {
-        debugger;
-        var data = { };// ko.utils.unwrapObservable(this.filterParams);
+        var data = ko.toJS(this.filterParams);
         data.pageNumber = this.paging.PageNumber();
-        //   data.sort = ko.toJS(this.sorting);
+        data.sort = ko.toJS(this.sorting);
+        
         $.ajax({
             url: url,
             type: 'POST',
@@ -61,15 +61,13 @@
             }
         });
         // location.hash = this.paging.PageNumber();
-    }, self);
+    }, self).extend({ throttle: 1 }); //fix 2 request http://knockoutjs.com/documentation/extenders.html
 
 
-    //    ko.computed(function () {
-    //        ko.toJS(this.filterParams);
-    //        this.paging.PageNumber(1);
-
-    //        debugger;
-    //    }, this);
+        ko.computed(function () {
+            ko.toJS(this.filterParams);
+            this.paging.PageNumber(1);
+        }, this);//todo: fix me
 
     //    Sammy(function () {
     //        this.get('#:page', function () {

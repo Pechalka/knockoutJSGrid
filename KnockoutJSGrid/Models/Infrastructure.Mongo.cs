@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 
@@ -37,8 +38,10 @@ namespace KnockoutJSGrid.Models
             return this;
         }
 
+        private bool _needPaging;
         public IQuery<T> Page(int pageNumber)
         {
+            _needPaging = true;
             _pageNumber = pageNumber;
             return this;
         }
@@ -52,18 +55,27 @@ namespace KnockoutJSGrid.Models
         public PageOf<T> Execute()
         {
             var collection = GetCollection<T>();
+            var cursor = collection.Find(_query);
 
-            var sortBy = _sorting.Distinct == "asc" ? SortBy.Ascending(_sorting.Field) : SortBy.Descending(_sorting.Field);
+            if (_sorting != null)
+            {
+                var sortBy = _sorting.Distinct == "asc"
+                             ? SortBy.Ascending(_sorting.Field)
+                             : SortBy.Descending(_sorting.Field);
+                cursor.SetSortOrder(sortBy);
+            }
+            if (_needPaging)
+            {
+                cursor.SetSkip((_pageNumber - 1) * _pageSize).SetLimit(_pageSize); 
+            }
 
-            var totalItemCount = (int)collection.Find(_query).Count();
-            var paging = new Paging(_pageNumber, totalItemCount, _pageSize);
-
-            var items = collection.Find(_query).SetSortOrder(sortBy).SetSkip((_pageNumber - 1) * _pageSize).SetLimit(_pageSize);
+            var items = cursor; 
+            var totalItemCount = (int)cursor.Count();
 
             return new PageOf<T>
             {
                 Data = items,
-                Paging = paging
+                Paging = new Paging(_pageNumber, totalItemCount, _pageSize)
             };
         }
 

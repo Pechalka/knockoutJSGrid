@@ -43,9 +43,7 @@ namespace KnockoutJSGrid.Controllers
  
         public ActionResult List(Sorting sort, FilterParams filterParams, int pageNumber = 1)
         {
-            sort = new Sorting {Distinct = "asc", Field = "FirstName"};// js not fix yeat
-
-            var query = For<Person>().FindBy(filterParams).Set(sort).Page(pageNumber).Limite(10);
+            var query = For<Person>().Set(sort).FindBy(filterParams).Page(pageNumber).Limite(10);
 
             var onePageOfPersons = query.Execute();
             
