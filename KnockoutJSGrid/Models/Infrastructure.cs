@@ -6,12 +6,19 @@ namespace KnockoutJSGrid.Models
 {
     public class Paging
     {
+        public Paging(int page, int totalItemsCount, int pageSize = 10)
+        {
+            PageNumber = page;
+            TotalItemsCount = totalItemsCount;
+            PageSize = pageSize;
+        }
+
         public int PageNumber { get; set; }
         public int TotalPagesCount {
             get { return (int)Math.Ceiling(1D * TotalItemsCount / PageSize); }
         }
 
-        public  int PageSize = 10;
+        public  int PageSize;
         public int TotalItemsCount { get; set; }
     }
 

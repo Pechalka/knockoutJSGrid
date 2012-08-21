@@ -6,6 +6,7 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using KnockoutJSGrid.Controllers;
 using KnockoutJSGrid.Models;
+using MongoDB.Driver;
 
 namespace KnockoutJSGrid
 {
@@ -41,45 +42,20 @@ namespace KnockoutJSGrid
             var container = new WindsorContainer();
 
             container.Register(
-                Component.For<IQuery<IQueryable<Person>, FilterParams>>().ImplementedBy<FindPersonsQuery>(),
-                Component.For<IDefaultValueFor<PersonsViewModel>>().ImplementedBy<DefaultValueStorage>()
-
+                Component.For(typeof (IQuery<>)).ImplementedBy(typeof (MongoQuery<>)),
+                Component.For<ITranclator<FilterParams, IMongoQuery>>().ImplementedBy<PersonTraslator>()
                 );
 
             DependencyResolver.SetResolver(new WindsorDependencyResolver(container));
             ControllerBuilder.Current.SetControllerFactory(new CastleControllerFactory(container));
             
-            ModelBinders.Binders.DefaultBinder = new DIModelBinder();
+          //  ModelBinders.Binders.DefaultBinder = new DIModelBinder();
 
             PersonsGenerator.MakeTestData();
 
         }
 
-        private PersonsViewModel defaultPersonsViewModel()
-        {
-            var colors = new[]
-                             {
-                                 new KeyValuePair<string, string>("1", "Black"),
-                                 new KeyValuePair<string, string>("2", "Red"),
-                                 new KeyValuePair<string, string>("3", "Green"), 
-                             };
-            var filter = new FilterParams
-            {
-                Colors = colors,
-                SelectedColor = "2"
-            };
-            var sort = new Sorting
-            {
-                Field = "FirstName",
-                Distinct = "asc"
-            };
-
-            return new PersonsViewModel
-            {
-                Filter = filter,
-                Sort = sort
-            };
-        }
+       
     }
 
 

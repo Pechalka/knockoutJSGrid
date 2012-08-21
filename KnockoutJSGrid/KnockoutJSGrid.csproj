@@ -74,6 +74,7 @@
     <Compile Include="Models\Configuration.cs" />
     <Compile Include="Models\Infrastructure.cs" />
     <Compile Include="Models\Infrastructure.Mmvc.cs" />
+    <Compile Include="Models\Infrastructure.Mongo.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Person.Mongo.cs" />
     <Compile Include="Models\Student.cs" />
@@ -199,9 +200,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Tests\CustomeBinding.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Models\Infrastructure.CQRS.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Tests\Form.cshtml" />

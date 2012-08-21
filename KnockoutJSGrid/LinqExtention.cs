@@ -140,11 +140,7 @@ namespace KnockoutJSGrid
         {
             int totalItemsCount;
             var items = source.Paging(pageNumber, pageSize, out totalItemsCount).ToList();
-            var paging = new Paging
-            {
-                TotalItemsCount = totalItemsCount,
-                PageNumber = pageNumber
-            };
+            var paging = new Paging(pageNumber, totalItemsCount);
 
             return new PageOf<TItem>
             {

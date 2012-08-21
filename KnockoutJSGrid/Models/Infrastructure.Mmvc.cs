@@ -58,23 +58,23 @@ namespace KnockoutJSGrid.Models
     }
 
 
-    public class DIModelBinder : DefaultModelBinder
-    {
-        protected override object CreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, System.Type modelType)
-        {
-            var factory =  getService(modelType);
-            if (factory == null)
-                return base.CreateModel(controllerContext, bindingContext, modelType);
+    //public class DIModelBinder : DefaultModelBinder
+    //{
+    //    protected override object CreateModel(ControllerContext controllerContext, ModelBindingContext bindingContext, System.Type modelType)
+    //    {
+    //        var factory =  getService(modelType);
+    //        if (factory == null)
+    //            return base.CreateModel(controllerContext, bindingContext, modelType);
 
-            var defaultValue = factory.DefaultValue();
-            return defaultValue ??
-                base.CreateModel(controllerContext, bindingContext, modelType);
-        }
+    //        var defaultValue = factory.DefaultValue();
+    //        return defaultValue ??
+    //            base.CreateModel(controllerContext, bindingContext, modelType);
+    //    }
 
-        private IDefaultValueFor<object> getService(Type modelType)
-        {
-            var type = typeof (IDefaultValueFor<>).MakeGenericType(modelType);
-            return DependencyResolver.Current.GetService(type) as IDefaultValueFor<object>;
-        }
-    }
+    //    private IDefaultValueFor<object> getService(Type modelType)
+    //    {
+    //        var type = typeof (IDefaultValueFor<>).MakeGenericType(modelType);
+    //        return DependencyResolver.Current.GetService(type) as IDefaultValueFor<object>;
+    //    }
+    //}
 }

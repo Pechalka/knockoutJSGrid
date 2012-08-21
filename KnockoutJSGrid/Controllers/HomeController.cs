@@ -9,38 +9,12 @@ namespace KnockoutJSGrid.Controllers
 {
     public class HomeController : Controller
     {
-        public CQRSQuery Query = new CQRSQuery();
-
-
-
-        public ActionResult Index(PersonsViewModel defaultViewModel)
+        public ActionResult Index()
         {
-            return View(defaultViewModel);
+            return View(defaultPersonsViewModel());
         }
 
-
- 
-        public ActionResult List(Sorting sort, FilterParams filterParams, int pageNumber = 1)
-        {
-            var onePageOfPersons = Query
-                .ForQueryable<Person>()
-                .With(filterParams)
-                //.OrderBy(sort)
-                .GetPage(pageNumber, 10);
-
-            return Json(onePageOfPersons);
-        }
-    }
-
-    public interface IDefaultValueFor<out TObject>
-    {
-        TObject DefaultValue();
-    }
-
-
-    public class DefaultValueStorage : IDefaultValueFor<PersonsViewModel>
-    {
-        public PersonsViewModel DefaultValue()
+        private PersonsViewModel defaultPersonsViewModel()
         {
             var colors = new[]
                              {
@@ -49,10 +23,10 @@ namespace KnockoutJSGrid.Controllers
                                  new KeyValuePair<string, string>("3", "Green"), 
                              };
             var filter = new FilterParams
-                             {
-                                 Colors = colors,
-                                 SelectedColor = "2"
-                             };
+            {
+                Colors = colors,
+                SelectedColor = "2"
+            };
             var sort = new Sorting
             {
                 Field = "FirstName",
@@ -65,54 +39,23 @@ namespace KnockoutJSGrid.Controllers
                 Sort = sort
             };
         }
-    }
 
-
-    public class FindPersonsQuery : BaseMongoQuery<Person, FilterParams>
-    {
-        protected override IMongoQuery buildQuery(FilterParams filter)
+ 
+        public ActionResult List(Sorting sort, FilterParams filterParams, int pageNumber = 1)
         {
-            IMongoQuery query = base.buildQuery(filter);
+            sort = new Sorting {Distinct = "asc", Field = "FirstName"};// js not fix yeat
 
-            if (filter.AgeFrom.HasValue)
-                query = Query.And(query, Query.GT("Age", filter.AgeFrom));
+            var query = For<Person>().FindBy(filterParams).Set(sort).Page(pageNumber).Limite(10);
 
-            if (filter.AgeTo.HasValue)
-                query = Query.And(query, Query.LTE("Age", filter.AgeTo));
+            var onePageOfPersons = query.Execute();
+            
 
-            return query;
-        }
-    }
-
-    public class BaseMongoQuery<TItem, TFilter> : BaseMongoQuery, IQuery<IQueryable<TItem>, TFilter> 
-    {
-        public virtual IQueryable<TItem> Execute(TFilter filter)
-        {
-            var query = buildQuery(filter);
-            return GetCollection<TItem>().Find(query).AsQueryable();
+            return Json(onePageOfPersons);
         }
 
-        protected virtual IMongoQuery buildQuery(TFilter filter)
+        private IQuery<T> For<T>()
         {
-            return Query.Exists("_id");
+            return DependencyResolver.Current.GetService<IQuery<T>>();
         }
     }
-
-    public class BaseMongoQuery
-    {
-        public static MongoCollection<TCollection> GetCollection<TCollection>(string collectionName = null)
-        {
-            var server = MongoServer.Create(Configuration.DataBaseConnectionString);
-            var database = server.GetDatabase("Persons");
-
-            if (collectionName == null)
-                collectionName = typeof(TCollection).Name + "s";
-            return database.GetCollection<TCollection>(collectionName);
-        }
-    }
-
-
-
-
 }
-

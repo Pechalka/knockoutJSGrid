@@ -40,11 +40,7 @@ namespace KnockoutJSGrid.Controllers
                                               new Student{},
                                               new Student{}
                                           },
-                                          Paging = new Paging
-                                                       {
-                                                           PageNumber = pageNumber,
-                                                           TotalItemsCount = 4
-                                                       }
+                                          Paging = new Paging(pageNumber, 4)
                            };
             return Json(data, JsonRequestBehavior.AllowGet);
         }
