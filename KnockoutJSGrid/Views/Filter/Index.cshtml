@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    
+    <script type="text/javascript">
+        $(function () {
+            ko.bindingHandlers.slideVisible = {
+                update: function (element, valueAccessor, allBindingsAccessor) {
+                    // First get the latest data that we're bound to
+                    var value = valueAccessor(), allBindings = allBindingsAccessor();
+
+                    // Next, whether or not the supplied model property is observable, get its current value
+                    var valueUnwrapped = ko.utils.unwrapObservable(value);
+
+                    // Grab some more data from another binding property
+                    var duration = allBindings.slideDuration || 400; // 400ms is default duration unless otherwise specified
+
+                    // Now manipulate the DOM element
+                    if (valueUnwrapped == true)
+                        $(element).slideDown(duration); // Make the element visible
+                    else
+                        $(element).slideUp(duration);   // Make the element invisible
+                }
+            };
+
+            var Filter = function () {
+                var self = this;
+                self.giftWrap = ko.observable(true);
+                self.saveFilter = function () {
+                    self.giftWrap(true);
+
+
+                };
+                self.editMode = function () {
+                    self.giftWrap(false);
+                };
+                self.Conditions = ko.observableArray([new Condition('Between 1 2'), new Condition('Color : red')]);
+                self.chosenCountries = ko.observable('0');
+
+
+                self.removeCondition = function (condition) {
+                    condition.reset();
+                    self.Conditions.remove(condition);
+                };
+            };
+
+            var Condition = function (text, reset) {
+                this.text = text;
+                this.reset = reset || function () { alert('sdf'); };
+            };
+
+
+            var BetweenConditionViewModel = function (name, label) {
+                var self = this;
+
+                this.labe = label;
+                this.text = text;
+                
+                this.types = ko.observableArray(['All', 'Between', 'Greate', 'Less']);
+                this.selectedType = ko.observable('All');
+                this.name = ko.observable(name);
+                this.minValue = ko.observable('#');
+                this.maxValue = ko.observable('#');
+
+                this.valuesNotDefault = ko.computed(function () {
+                    return self.selectedType() != 'All';
+                }, self);
+
+                this.showMaxValue = ko.computed(function () {
+                    return self.selectedType() == 'Between';
+                }, self);
+
+                this.labelText = ko.computed(function () {
+                    return self.labe + ' : ' + self.selectedType() + ' ' + self.minValue() + (self.showMaxValue() ? self.maxValue() : '');
+                }, self);
+
+                this.getModel = ko.computed(function () {
+                    return { Name: self.name(), Type: self.selectedType(), Values: [self.minValue(), self.maxValue()] };
+                }, self);
+                
+                this.reset = function () {
+                    self.selectedType('All');
+                    self.minValue('#');
+                    self.maxValue('#');
+                };
+            };
+
+
+            var filter = new Filter();
+            ko.applyBindings(filter);
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="span9" data-bind="slideVisible : !giftWrap(), slideDuration : 600" >
+        <form class="form-inline">
+            <select class="input-medium">
+                <option>All</option>
+                <option>Vasa</option>
+                <option>Peta</option>
+                <option>Gala</option>
+            </select>
+            <select class="input-medium" data-bind="selectedOptions: chosenCountries">
+                <option value="0">Between</option>
+                <option value="1">Grate than</option>
+                <option value="2">Less than</option>
+            </select>
+            <input type="text" class="input-mini"  placeholder="#"/>
+            <span>and</span>
+            <input type="text" class="input-mini"  placeholder="#"/>
+            <input type="button"  value="save" data-bind="click : saveFilter" class="btn"/>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="span9" data-bind="slideVisible : giftWrap, slideDuration : 600" >
+        <div data-bind="foreach : Conditions">
+            <label class="label span2" ><span data-bind="text : text"></span><a class="close" href="#" data-bind="click : $root.removeCondition">&times;</a></label>
+        </div>
+        <input type="button"   value="edit filter options" data-bind="click : editMode" class="btn"/>
+    </div>
+</div>

@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Play";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts
+{
+    <script type="text/javascript">
+        var ENTER_KEY = 13;
+        ko.bindingHandlers.enterKey = {
+            init: function (element, valueAccessor, allBindingsAccessor, data) {
+                var wrappedHandler, newValueAccessor;
+                
+                wrappedHandler = function (data, event) {
+                    if (event.keyCode === ENTER_KEY) {
+                        valueAccessor().call(this, data, event);
+                    }
+                };
+
+                newValueAccessor = function () {
+                    return {
+                        keyup: wrappedHandler
+                    };
+                };
+
+                ko.bindingHandlers.event.init(element, newValueAccessor, allBindingsAccessor, data);
+            }
+        };
+
+        // wrapper to hasfocus that also selects text and applies focus async
+        ko.bindingHandlers.selectAndFocus = {
+            init: function (element, valueAccessor, allBindingsAccessor) {
+                ko.bindingHandlers.hasfocus.init(element, valueAccessor, allBindingsAccessor);
+                ko.utils.registerEventHandler(element, 'focus', function () {
+                    element.focus();
+                });
+            },
+            update: function (element, valueAccessor) {
+                ko.utils.unwrapObservable(valueAccessor()); // for dependency
+                // ensure that element is visible before trying to focus
+                setTimeout(function () {
+                    ko.bindingHandlers.hasfocus.update(element, valueAccessor);
+                }, 0);
+            }
+        };
+
+        var ViewModel = function (todos) {
+            var self = this;
+
+            self.newItemTitle = ko.observable('');
+            self.todos = ko.observableArray(ko.utils.arrayMap(todos, function (todo) {
+                return new Todo(todo.title);
+            }));
+
+            self.add = function () {
+                var title = self.newItemTitle().trim();
+                if (title) {
+                    self.todos.push(new Todo(title));
+                    self.newItemTitle('');
+                }
+            };
+
+            self.remove = function(item) {
+                self.todos.remove(item);
+            };
+
+            self.editItem = function (item) {
+                item.editing(true);
+            };
+            self.stopEditing = function (item) {
+                item.editing(false);
+            };
+        };
+        $(function () {
+            var viewModel = new ViewModel([{ title : 'test'}]);
+            ko.applyBindings(viewModel);
+        });
+
+        var Todo = function (title) {
+            this.title = ko.observable(title);
+            this.editing = ko.observable(false);
+        };
+
+    </script>
+
+}
+
+
+
+<h2>Play</h2>
+<input type="text" data-bind="enterKey : add, value : newItemTitle, valueUpdate: 'afterkeydown'"/>
+<div data-bind="foreach: todos">
+    <input type="text" data-bind="value : title, valueUpdate: 'afterkeydown', visible : editing, enterKey : $root.stopEditing, hasfocus : editing" />
+    <label data-bind="text : title, visible : !editing(), event: { dblclick: $root.editItem }"></label>
+    <a href="#" data-bind="click: $root.remove" class="btn btn-mini">delete</a>    
+</div>
+<div data-bind="text : ko.toJSON($data)"></div>
+
+@*<input type="checkbox" />
+<input type="text" data-bind="enterKey : stopEditing, selectAndFocus : hasfocusfunction"/>
+<input type="button" data-bind="click : doSomething" value="do" class="btn"/>
+
+<div data-bind="text : ko.toJSON($data)"></div>*@

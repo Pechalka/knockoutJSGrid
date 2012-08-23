@@ -45,6 +45,11 @@ namespace KnockoutJSGrid.Controllers
             }
             return Redirect("Form");
         }
+
+        public ActionResult Play()
+        {
+            return View();
+        }
     }
 }
 
