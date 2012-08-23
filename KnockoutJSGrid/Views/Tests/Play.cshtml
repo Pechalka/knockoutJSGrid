@@ -79,10 +79,15 @@
         var Todo = function (title) {
             this.title = ko.observable(title);
             this.editing = ko.observable(false);
+            this.completed = ko.observable(true);
         };
 
     </script>
-
+    <style type="text/css">
+        .complite {
+            text-decoration: line-through;
+        }
+    </style>
 }
 
 
@@ -90,8 +95,8 @@
 <h2>Play</h2>
 <input type="text" data-bind="enterKey : add, value : newItemTitle, valueUpdate: 'afterkeydown'"/>
 <div data-bind="foreach: todos">
-    <input type="text" data-bind="value : title, valueUpdate: 'afterkeydown', visible : editing, enterKey : $root.stopEditing, hasfocus : editing" />
-    <label data-bind="text : title, visible : !editing(), event: { dblclick: $root.editItem }"></label>
+    <input type="text" data-bind="css: { completed: completed }, value : title, valueUpdate: 'afterkeydown', visible : editing, enterKey : $root.stopEditing, hasfocus : editing" />
+    <label class="complite" data-bind="text : title, visible : !editing(), event: { dblclick: $root.editItem }"></label>
     <a href="#" data-bind="click: $root.remove" class="btn btn-mini">delete</a>    
 </div>
 <div data-bind="text : ko.toJSON($data)"></div>
