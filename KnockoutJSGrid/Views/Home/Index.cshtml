@@ -1,58 +1,9 @@
 ﻿@using KnockoutJSGrid
 @using KnockoutJSGrid.Models
 @model PersonsViewModel
-
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Persons";
-}
-
-@section templates{
-    <script type="text/html" id="FiltrationPanel">
-        <div id="hilterHolder">
-            Age from <input type="text" size="3" data-bind="value: AgeFrom" /> to <input type="text" size="3" data-bind="value: AgeTo" />
-            <br />
-            <label><input type="checkbox" data-bind="checked: ShowMale" />Show male</label> 
-            <br />
-            <label><input type="checkbox" data-bind="checked: ShowFemale" />Show female</label> 
-            <select data-bind="options: Colors, value : SelectedColor, optionsValue: 'Key', optionsText: 'Value'"></select>    
-        </div>
-        <input type="button" id="switcher" value="ggg"/>
-    </script>
-
-    <script type="text/html" id="TableRow">
-        <tr>
-            <td data-bind="text: FirstName"></td>
-            <td data-bind="text: LastName"></ td>
-            <td data-bind="text: Gender"></td>
-            <td data-bind="text: Age"></td>
-        </tr>
-    </script>
-
-    <script type="text/html" id="TableHeaders">
-        <tr>
-            <th class="sorting" data-bind="sort: 'FirstName', class : checkSort('FirstName')">First name</th>
-            <th class="sorting" data-bind="sort: 'LastName', class : checkSort('LastName')">Last name</th>
-            <th>	Gender</th>
-            <th class="sorting" data-bind="sort: 'Age', class : checkSort('Age')">Age</th>
-        </tr>
-    </script>
-
-    <script type="text/html" id="PagingPanel">
-    <div class="row">
-        <div class="span6"><div class="dataTables_info" id="example_info">Page <span data-bind="text: PageNumber" /> of <span data-bind="text: TotalPagesCount" />.</div></div>
-        <div class="span6">
-     <ul class="pager">
-      <li>
-        <a href="#" data-bind="click: back">Previous</a>
-      </li>
-      <li>
-        <a href="#" href="#next" data-bind="click: next">Next</a>
-      </li>
-    </ul>
-        </div>
-    </div>
-    </script>
 }
 
 @section scripts{
@@ -81,29 +32,67 @@
 }
 <div class="row">
     <div class="span12">
-  	<div data-bind="template: {
-	    name: 'FiltrationPanel',
-	    data: filterParams}">
-	</div>
-
-    <table class="table table-bordered">
-        <thead data-bind="template: {
-            name: 'TableHeaders'
-        }">
-        </thead>
-        <tbody data-bind="template: {
-            name: 'TableRow',
-            foreach: rows
-        }">
-        </tbody>
-    </table>
-
-    <div data-bind="template: {
-        name: 'PagingPanel',
-        data: paging }">
-    </div>  
-    
+        <div data-bind="with: filterParams">
+            <div id="hilterHolder">
+                Age from
+                <input type="text" size="3" data-bind="value: AgeFrom" />
+                to
+                <input type="text" size="3" data-bind="value: AgeTo" />
+                <br />
+                <label>
+                    <input type="checkbox" data-bind="checked: ShowMale" />Show male</label>
+                <br />
+                <label>
+                    <input type="checkbox" data-bind="checked: ShowFemale" />Show female</label>
+                <select data-bind="options: Colors, value : SelectedColor, optionsValue: 'Key', optionsText: 'Value'">
+                </select>
+            </div>
+            <input type="button" id="switcher" value="ggg" />
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="sorting" data-bind="sort: 'FirstName', class : checkSort('FirstName')">
+                        First name
+                    </th>
+                    <th class="sorting" data-bind="sort: 'LastName', class : checkSort('LastName')">
+                        Last name
+                    </th>
+                    <th>
+                        Gender
+                    </th>
+                    <th class="sorting" data-bind="sort: 'Age', class : checkSort('Age')">
+                        Age
+                    </th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: rows">
+                <tr>
+                    <td data-bind="text: FirstName">
+                    </td>
+                    <td data-bind="text: LastName">
+                    </td>
+                    <td data-bind="text: Gender">
+                    </td>
+                    <td data-bind="text: Age">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div data-bind="with: paging">
+            <div class="row">
+                <div class="span6">
+                    <div class="dataTables_info" id="example_info">
+                        Page <span data-bind="text: PageNumber" />of <span data-bind="text: TotalPagesCount" />
+                        .</div>
+                </div>
+                <div class="span6">
+                    <ul class="pager">
+                        <li><a href="#" data-bind="click: back">Previous</a> </li>
+                        <li><a href="#" href="#next" data-bind="click: next">Next</a> </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-
