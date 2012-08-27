@@ -17,19 +17,35 @@
             };
         };
 
+        var ManualFilter = function(model) {
+            this.filterParams = ko.mapping.fromJS(model);
+            var self = this;
+            this.onFiltring = function(data) {};
+            this.filted = function() {
+                this.onFiltring( ko.toJS(self.filterParams));
+            };
+            
+
+        };
+
         $(function() {
-            var filter = new Filter(@Html.ToJSON(Model.Filter));
-            var grid = new Grid('@Url.Action("List")', @Html.ToJSON(Model.Sort), filter.getData);
+            var grid = new Grid('@Url.Action("List")', @Html.ToJSON(Model.Sort));
+            var filter = new ManualFilter(@Html.ToJSON(Model.Filter));
+            
+            filter.onFiltring = function(data) {
+                grid.paging.PageNumber(1);
+                grid.update(data);
+            };
+
             var viewModel = $.extend({}, filter, grid);
 
-
-        //    var viewModel = new Grid('@Url.Action("List")', @Html.ToJSON(Model.Sort));
-        
+            
 
             ko.applyBindings(viewModel);
         });
     </script>
 }
+<a class="btn" data-bind="click : filted">test</a>
 <div class="row">
     <div class="span12">
         <div data-bind="with: filterParams">
@@ -83,8 +99,8 @@
             <div class="row">
                 <div class="span6">
                     <div class="dataTables_info" id="example_info">
-                        Page <span data-bind="text: PageNumber" />of <span data-bind="text: TotalPagesCount" />
-                        .</div>
+                        Page <span data-bind="text: PageNumber" ></span> of <span data-bind="text: TotalPagesCount" ></span>
+                        </div>
                 </div>
                 <div class="span6">
                     <ul class="pager">

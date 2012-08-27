@@ -1,8 +1,7 @@
 ﻿var Grid = function (url, sort, filterData) {
     var self = this;
     this.rows = ko.observableArray();
-    this.filterData = filterData || function () { return { }; };
-    // this.filterParams = ko.mapping.fromJS(filterParams);
+    this.filterData = filterData || function () { return {}; };
 
     this.paging = {
         PageNumber: ko.observable(1),
@@ -41,15 +40,24 @@
         }
     };
 
+    this.update = function (data) {
+        this.updateData = data;
 
+        var c = this._counter();
+        this._counter(c + 1);
+    };
 
+    this._counter = ko.observable(0);
 
     ko.computed(function () {
         var data = this.filterData();
-        //ko.toJS(this.filterParams);
         data.pageNumber = this.paging.PageNumber();
         data.sort = ko.toJS(this.sorting);
 
+        this._counter();
+
+        data = $.extend(data, this.updateData || {});
+        // debugger;
         $.ajax({
             url: url,
             type: 'POST',
@@ -57,30 +65,21 @@
             context: this,
             contentType: 'application/json',
             success: function (response) {
+                debugger;
                 this.rows(response.Data);
                 this.paging.PageNumber(response.Paging.PageNumber);
                 this.paging.TotalPagesCount(response.Paging.TotalPagesCount);
             }
         });
-        // location.hash = this.paging.PageNumber();
-    }, self).extend({ throttle: 1 }); //fix 2 request http://knockoutjs.com/documentation/extenders.html
+
+    }, self).extend({ throttle: 1 });
 
 
     ko.computed(function () {
-        //     ko.toJS(this.filterParams);
         this.filterData();
         this.paging.PageNumber(1);
     }, this); //todo: fix me
 
-    //    Sammy(function () {
-    //        this.get('#:page', function () {
-    //            debugger;
-    //            var page = parseInt(this.params.page, 10);
-    //            self.paging.PageNumber(page);
-
-    //        });
-
-    //    }).run();
 };
 
 
