@@ -1,7 +1,8 @@
-﻿var AjaxGridViewModel = function (url, filterParams, sort) {
+﻿var Grid = function (url, sort, filterData) {
     var self = this;
     this.rows = ko.observableArray();
-    this.filterParams = ko.mapping.fromJS(filterParams);
+    this.filterData = filterData || function () { return { }; };
+    // this.filterParams = ko.mapping.fromJS(filterParams);
 
     this.paging = {
         PageNumber: ko.observable(1),
@@ -44,10 +45,11 @@
 
 
     ko.computed(function () {
-        var data = ko.toJS(this.filterParams);
+        var data = this.filterData();
+        //ko.toJS(this.filterParams);
         data.pageNumber = this.paging.PageNumber();
         data.sort = ko.toJS(this.sorting);
-        
+
         $.ajax({
             url: url,
             type: 'POST',
@@ -64,10 +66,11 @@
     }, self).extend({ throttle: 1 }); //fix 2 request http://knockoutjs.com/documentation/extenders.html
 
 
-        ko.computed(function () {
-            ko.toJS(this.filterParams);
-            this.paging.PageNumber(1);
-        }, this);//todo: fix me
+    ko.computed(function () {
+        //     ko.toJS(this.filterParams);
+        this.filterData();
+        this.paging.PageNumber(1);
+    }, this); //todo: fix me
 
     //    Sammy(function () {
     //        this.get('#:page', function () {

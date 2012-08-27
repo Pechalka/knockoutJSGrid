@@ -58,9 +58,24 @@
 @section scripts{
     <script type="text/javascript" src="@Url.Content("~/Scripts/AjaxGridViewModel.js")"></script>
     <script type="text/javascript">
+        var Filter = function(model) {
+            this.filterParams = ko.mapping.fromJS(model);
+            var self = this;
+            this.getData = function() {
+                return ko.toJS(self.filterParams);
+            };
+        };
+
         $(function() {
-            var ajaxGrid = new AjaxGridViewModel('@Url.Action("List")', @Html.ToJSON(Model.Filter), @Html.ToJSON(Model.Sort));
-	        ko.applyBindings(ajaxGrid);
+            var filter = new Filter(@Html.ToJSON(Model.Filter));
+            var grid = new Grid('@Url.Action("List")', @Html.ToJSON(Model.Sort), filter.getData);
+            var viewModel = $.extend({}, filter, grid);
+
+
+        //    var viewModel = new Grid('@Url.Action("List")', @Html.ToJSON(Model.Sort));
+        
+
+            ko.applyBindings(viewModel);
         });
     </script>
 }
