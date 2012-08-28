@@ -57,7 +57,7 @@
         this._counter();
 
         data = $.extend(data, this.updateData || {});
-        // debugger;
+        
         $.ajax({
             url: url,
             type: 'POST',
@@ -65,7 +65,6 @@
             context: this,
             contentType: 'application/json',
             success: function (response) {
-                debugger;
                 this.rows(response.Data);
                 this.paging.PageNumber(response.Paging.PageNumber);
                 this.paging.TotalPagesCount(response.Paging.TotalPagesCount);
@@ -78,7 +77,7 @@
     ko.computed(function () {
         this.filterData();
         this.paging.PageNumber(1);
-    }, this); //todo: fix me
+    }, this); 
 
 };
 

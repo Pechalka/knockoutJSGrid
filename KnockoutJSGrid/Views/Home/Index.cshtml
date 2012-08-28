@@ -45,26 +45,19 @@
         });
     </script>
 }
-<a class="btn" data-bind="click : filted">test</a>
 <div class="row">
     <div class="span12">
-        <div data-bind="with: filterParams">
-            <div id="hilterHolder">
-                Age from
-                <input type="text" size="3" data-bind="value: AgeFrom" />
-                to
-                <input type="text" size="3" data-bind="value: AgeTo" />
-                <br />
-                <label>
-                    <input type="checkbox" data-bind="checked: ShowMale" />Show male</label>
-                <br />
-                <label>
-                    <input type="checkbox" data-bind="checked: ShowFemale" />Show female</label>
-                <select data-bind="options: Colors, value : SelectedColor, optionsValue: 'Key', optionsText: 'Value'">
-                </select>
-            </div>
-            <input type="button" id="switcher" value="ggg" />
-        </div>
+        <form data-bind="with: filterParams, submit : filted" class="form-inline well">
+            <label>Age</label>
+            <input type="text" class="input-mini" size="3" placeholder="from" data-bind="value: AgeFrom" />
+            <input type="text" class="input-mini" size="3" placeholder="to" data-bind="value: AgeTo" />
+            <label class="checkbox ">
+                <input type="checkbox" data-bind="checked: ShowMale" />Show male</label>
+            <label class="checkbox ">
+                <input type="checkbox" data-bind="checked: ShowFemale" />Show female</label>
+            <select data-bind="options: Colors, value : SelectedColor, optionsValue: 'Key', optionsText: 'Value'"></select>                    
+            <button style="float: right;" type="submit" class="btn btn-large" >filter</button>
+        </form>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -97,12 +90,12 @@
         </table>
         <div data-bind="with: paging">
             <div class="row">
-                <div class="span6">
-                    <div class="dataTables_info" id="example_info">
+                <div class="span10">
+                    <div class="dataTables_info">
                         Page <span data-bind="text: PageNumber" ></span> of <span data-bind="text: TotalPagesCount" ></span>
                         </div>
                 </div>
-                <div class="span6">
+                <div class="span2">
                     <ul class="pager">
                         <li><a href="#" data-bind="click: back">Previous</a> </li>
                         <li><a href="#" href="#next" data-bind="click: next">Next</a> </li>
