@@ -16,5 +16,10 @@ namespace KnockoutJSGrid.Controllers
             return View();
         }
 
+
+        public ActionResult Html()
+        {
+            return View();
+        }
     }
 }
