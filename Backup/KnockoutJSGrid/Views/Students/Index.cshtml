@@ -1,0 +1,111 @@
+﻿@model StudentViewModel
+@using KnockoutJSGrid
+@using KnockoutJSGrid.Models
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section templates{
+    <script type="text/html" id="FiltrationPanel">
+        <div class="span9">
+            Filter
+        </div>
+        <div class="span3">
+            Button
+        </div>
+    </script>
+
+    <script type="text/html" id="TableRow">
+        <tr>
+            <td data-bind="text: Code"></td>
+            <td data-bind="text: Name"></ td>
+            <td data-bind="text: Grage"></ td>
+            <td data-bind="text: Record"></ td>
+            <td data-bind="text: Teacher"></ td>
+            <td data-bind="text: Status"></ td>
+        </tr>
+    </script>
+
+    <script type="text/html" id="TableHeaders">
+        <tr>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Code')">Code</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Name')">Name</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Grage')" >Grage</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Record')">Record</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Teacher')">Teacher</th>
+            <th class="sorting" data-bind="click: changeSort.bind($data, 'Status')">Status</th>
+        </tr>
+    </script>
+
+    <script type="text/html" id="PagingPanel">
+    <div class="row">
+        <div class="span6"><div class="dataTables_info" id="example_info">Page <span data-bind="text: PageNumber" /> of <span data-bind="text: TotalPagesCount" />.</div></div>
+        <div class="span6">
+     <ul class="pager">
+      <li>
+        <a href="#" data-bind="click: back">Previous</a>
+      </li>
+      <li>
+        <a href="#" href="#next" data-bind="click: next">Next</a>
+      </li>
+    </ul>
+        </div>
+    </div>
+    </script>
+}
+
+@section scripts{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/AjaxGridViewModel.js")"></script>
+    <script type="text/javascript">
+        $(function() {
+            var ajaxGrid = new AjaxGridViewModel('@Url.Action("UpdateGrid")', @Html.ToJSON(Model.Filter), @Html.ToJSON(Model.Sort));
+            
+            ajaxGrid.columns = {
+                'Code': 0,
+                'Name': 1,
+                'Grage': 2,
+                'Record': 3,
+                'Teacher' : 4,
+                'Status' : 5
+            };
+            
+	        ko.applyBindings(ajaxGrid);
+        });
+    </script>
+}
+<div class="row">
+    <div class="span6" ><h2>Students</h2></div>
+    <div class="span6" ><input type="button" class="btn btn-large" style="float: right; margin: 5px;" value="Add Student"/></div>
+</div>
+
+<div class="row">
+    <div class="span12">
+  	<div class="row" data-bind="template: {
+	    name: 'FiltrationPanel',
+	    data: filterParams}">
+	</div>
+
+    <table class="table table-bordered">
+        <thead data-bind="template: {
+            name: 'TableHeaders'
+        }">
+        </thead>
+        <tbody data-bind="template: {
+            name: 'TableRow',
+            foreach: rows
+        }">
+        </tbody>
+    </table>
+
+    <div data-bind="template: {
+        name: 'PagingPanel',
+        data: paging }">
+    </div>  
+    
+    </div>
+</div>
+
+
+

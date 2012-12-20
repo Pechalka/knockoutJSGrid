@@ -7,32 +7,39 @@
 }
 
 @section scripts{
-    <script type="text/javascript" src="@Url.Content("~/Scripts/SimpleGrid.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/AjaxGridViewModel.js")"></script>
     <script type="text/javascript">
-
-        function PageViewMode(url, grid_settings, filter) {
+        var Filter = function(model) {
+            this.filterParams = ko.mapping.fromJS(model);
             var self = this;
+            this.getData = function() {
+                return ko.toJS(self.filterParams);
+            };
+        };
+
+        var ManualFilter = function(model) {
+            this.filterParams = ko.mapping.fromJS(model);
+            var self = this;
+            this.onFiltring = function(data) {};
+            this.filted = function() {
+                this.onFiltring( ko.toJS(self.filterParams));
+            };
             
-            self.filterParams = ko.mapping.fromJS(filter);
-            self.grid = new Grid(url, grid_settings, self);
 
-            self.filted = function() {
-                self.grid.refresh({ pageNumber : 1, filterParams : ko.toJS(self.filterParams) });
-            };
-
-//            ko.computed(function() {
-//                self.grid.refresh({ filterParams : ko.toJS(self.filterParams)});
-//                
-//            });
-
-            self.show = function(item) {
-                alert(item.LastName);
-            };
-        }
-
+        };
 
         $(function() {
-            var viewModel = new PageViewMode('@Url.Action("List")', @Html.ToJSON(Model.Sort), @Html.ToJSON(Model.Filter));
+            var grid = new Grid('@Url.Action("List")', @Html.ToJSON(Model.Sort));
+            var filter = new ManualFilter(@Html.ToJSON(Model.Filter));
+            
+            filter.onFiltring = function(data) {
+                grid.paging.PageNumber(1);
+                grid.update(data);
+            };
+
+            var viewModel = $.extend({}, filter, grid);
+
+            
 
             ko.applyBindings(viewModel);
         });
@@ -51,16 +58,16 @@
             <select data-bind="options: Colors, value : SelectedColor, optionsValue: 'Key', optionsText: 'Value'"></select>                    
             <button style="float: right;" type="submit" class="btn btn-large" >filter</button>
         </form>
-        <table class="table table-bordered" data-bind="with : grid">
-            <thead >
-                <tr >
+        <table class="table table-bordered">
+            <thead>
+                <tr>
                     <th class="sorting" data-bind="sort: 'FirstName', class : checkSort('FirstName')">
                         First name
                     </th>
                     <th class="sorting" data-bind="sort: 'LastName', class : checkSort('LastName')">
                         Last name
                     </th>
-                    <th >
+                    <th>
                         Gender
                     </th>
                     <th class="sorting" data-bind="sort: 'Age', class : checkSort('Age')">
@@ -69,7 +76,7 @@
                 </tr>
             </thead>
             <tbody data-bind="foreach: rows">
-                <tr data-bind="click : $parent.$vm.show">
+                <tr>
                     <td data-bind="text: FirstName">
                     </td>
                     <td data-bind="text: LastName">
@@ -81,7 +88,7 @@
                 </tr>
             </tbody>
         </table>
-        <div data-bind="with: grid.paging">
+        <div data-bind="with: paging">
             <div class="row">
                 <div class="span10">
                     <div class="dataTables_info">

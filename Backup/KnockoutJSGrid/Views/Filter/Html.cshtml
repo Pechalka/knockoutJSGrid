@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "Html";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="span12">
+        <div>
+            <div class="well well-small">
+                <div class="pull-left">
+                    <a class="btn btn-small"><i class="icon-remove-sign"></i> Grade : 2</a>
+                    <a class="btn btn-small"><i class="icon-remove-sign"></i> Records : Between 1 and 4</a>
+                    <a class="btn btn-small"><i class="icon-remove-sign"></i> Staff : Vyshnya George</a>
+                    <a class="btn btn-small"><i class="icon-remove-sign"></i> Status : Archived</a>
+                </div>    
+                <a class="btn pull-right btn-info"><i class=" icon-filter"></i> Edit filter options</a>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="well well-small">
+                <div class="pull-left">
+                    <strong>By Status</strong>
+                    <label class="radio">
+                        <input type="radio" value="" name="optionsRadios">
+                        Active
+                    </label>
+                    <label class="radio">
+                        <input type="radio" value="" name="optionsRadios">
+                        Archived
+                    </label>
+                    <label class="radio">
+                        <input type="radio" value="" name="optionsRadios">
+                        Transfered
+                    </label>
+                    <label class="radio">
+                        <input type="radio" value="" checked="checked" name="optionsRadios">
+                        All
+                    </label>
+                </div>    
+                <div class="pull-left">
+                    <label><strong>By Grade</strong></label>
+                    <select class="input-mini">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+
+                </div>
+                <div class="pull-left">
+                    <label><strong>By # Records</strong></label>
+                    <select class="input-small">
+                        <option value="Between">Between</option>
+                        <option value="Greater Than">Greater Than</option>
+                        <option value="Less Than">Less Than</option>                   
+                    </select>
+                    <input class="input-mini" type="text" placeholder="#"> and 
+                    <input class="input-mini" type="text" placeholder="#">
+                </div>
+                <div class="pull-left">
+                    <label><strong>By Staff</strong></label>                    
+                    <select class="input-medium">
+                        <option value="Between">111</option>
+                        <option value="Greater Than">2222</option>
+                        <option value="Less Than">33333</option>                   
+                    </select>
+                    
+                </div>
+                <a class="btn pull-right btn-warning"><i class="icon-ok"></i> FILTER STUDENTS</a>
+                <div class="clearfix"></div>
+            </div>
+
+        </div>
+    </div>
+    
+</div>

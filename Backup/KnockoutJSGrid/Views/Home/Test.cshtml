@@ -1,0 +1,44 @@
+﻿@using KnockoutJSGrid
+@using KnockoutJSGrid.Controllers
+@model TestViewModel
+@{
+    ViewBag.Title = "Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section templates{
+    <script id="creditorsTmpl" type="text/html">
+    <p>
+    Your country: 
+    <select data-bind="options: Items,  optionsText: 'Value', value: selectedCountry, optionsCaption: 'All'"></select>
+</p>
+ 
+<div data-bind="visible: selectedCountry"> <!-- Appears when you select something -->
+    You have chosen a country with population 
+    <span data-bind="text: selectedCountry() ? selectedCountry().Value : 'unknown'"></span>.
+</div>
+<a href="#" data-bind="click: click">test</a>
+    </script>​
+
+}
+
+
+@section scripts{
+    <script type="text/javascript">
+        var viewModel = ko.mapping.fromJS(@Html.ToJSON(Model));
+        viewModel.selectedCountry = ko.observable();
+        viewModel.click = function () {
+            alert(viewModel.selectedCountry().Value());
+        };
+        
+        
+        $(function () {
+            ko.applyBindings(viewModel);
+        });
+    </script>
+
+}
+
+
+<div data-bind="template: { name: 'creditorsTmpl' }"></div>
+

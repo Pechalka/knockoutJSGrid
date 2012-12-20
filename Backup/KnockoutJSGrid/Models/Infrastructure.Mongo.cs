@@ -108,14 +108,6 @@ namespace KnockoutJSGrid.Models
             if (filter.AgeTo.HasValue)
                 query = Query.And(query, Query.LTE("Age", filter.AgeTo));
 
-//            if (!filter.ShowMale && !filter.ShowFemale)
-//            {
-//            
-//            }
-//           
-//            var gender_query = Query.Or(Query.Exists("_id"), Query.Exists("_id"));
-//            query = Query.And(query, gender_query);//Query.EQ("Gender", (int) Gender.Male)
-
             return query;
         }
     }

@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section scripts{
+    
+    <script type="text/javascript">
+        $(function () {
+            ko.bindingHandlers.slideVisible = {
+                update: function (element, valueAccessor, allBindingsAccessor) {
+                    // First get the latest data that we're bound to
+                    var value = valueAccessor(), allBindings = allBindingsAccessor();
+
+                    // Next, whether or not the supplied model property is observable, get its current value
+                    var valueUnwrapped = ko.utils.unwrapObservable(value);
+
+                    // Grab some more data from another binding property
+                    var duration = allBindings.slideDuration || 400; // 400ms is default duration unless otherwise specified
+
+                    // Now manipulate the DOM element
+                    if (valueUnwrapped == true)
+                        $(element).slideDown(duration); // Make the element visible
+                    else
+                        $(element).slideUp(duration);   // Make the element invisible
+                }
+            };
+
+            var BetweenConditionViewModel = function (name, label) {
+                var self = this;
+
+                this.labe = label;
+
+                this.types = ko.observableArray(['All', 'Between', 'Greate', 'Less']);
+                this.selectedType = ko.observable('All');
+                this.name = ko.observable(name);
+                this.minValue = ko.observable('#');
+                this.maxValue = ko.observable('#');
+
+                this.valuesNotDefault = ko.computed(function () {
+                    return self.selectedType() != 'All';
+                }, self);
+
+                this.showMaxValue = ko.computed(function () {
+                    return self.selectedType() == 'Between';
+                }, self);
+
+                this.labelText = ko.computed(function () {
+                    return self.labe + ' : ' + self.selectedType() + ' ' + self.minValue() + (self.showMaxValue() ? self.maxValue() : '');
+                }, self);
+
+                this.getModel = ko.computed(function () {
+                    return { Name: self.name(), Type: self.selectedType(), Values: [self.minValue(), self.maxValue()] };
+                }, self);
+
+                this.reset = function () {
+                    self.selectedType('All');
+                    self.minValue('#');
+                    self.maxValue('#');
+                };
+            };
+
+
+            var DropDownConditionViewModel = function (name, lable, items) {
+                var self = this;
+                self.lable = lable;
+                self.name = name;
+                items.push({ key: 'All', value: '' });
+                self.items = ko.mapping.fromJS(items);
+                self.selected = ko.observable({ key: ko.observable('All'), value: ko.observable('') });
+                self.labelText = ko.computed(function () {
+                    return this.lable + ' : ' + this.selected()[0].key();
+                }, self);
+                self.getModel = function () {
+                    return { Name: self.name, Type: 'equel', Values: [self.selected().value()] };
+                };
+                self.reset = function () {
+                    //   self.selected();
+                };
+            };
+
+            function Filter() {
+                var self = this;
+
+                self.giftWrap = ko.observable(true);
+                self.saveFilter = function () {
+                    self.giftWrap(true);
+
+                    $('#divConsole').html(self.Models());
+                }; 
+                self.editMode = function () {
+                    self.giftWrap(false);
+                };
+                self.Conditions = ko.observableArray([]);
+                self.chosenCountries = ko.observable('0');
+
+                this.addBetween = function (name, label) {
+                    self[name] = new BetweenConditionViewModel(name, label);
+                    self.Conditions.push(self[name]);
+                };
+
+                this.addDropDown = function (name, label, items) {
+                    self[name] = new DropDownConditionViewModel(name, label, items);
+                    self.Conditions.push(self[name]);
+                };
+
+                this.Models = ko.computed(function () {
+                    var result = [];
+                    ko.utils.arrayForEach(self.Conditions(), function (item) {
+                        result.push(item.getModel());
+                    });
+
+                    return ko.toJSON(result);
+                }, self);
+            }
+            var viewModel = {};
+            var filter = new Filter();
+            filter.addBetween('records', 'By Records');
+            filter.addDropDown('staff', 'By staff', [{ key: 'Vasa', value: '1' }, { key: 'Peta', value: '2' }, { key: 'Gala', value: '3'}]);
+
+            viewModel.filter = filter;
+
+
+            ko.applyBindings(viewModel);
+        });
+    </script>
+}
+
+<div class="row" data-bind="with : filter">
+    <div class="span9" data-bind="slideVisible : !giftWrap(), slideDuration : 600" >
+        <form class="form-inline">
+            <select class="input-medium" data-bind=" selectedOptions: staff.selected, options : staff.items, optionsText : 'key'">
+            </select>
+            <div data-bind="with : records">
+                <select class="input-medium" data-bind="selectedOptions: selectedType, options : types">
+                </select>
+                <input type="text" class="input-mini" data-bind="visible : valuesNotDefault, value : minValue"  placeholder="#"/>
+                <span data-bind="visible : showMaxValue">and</span>
+                <input type="text" class="input-mini"  placeholder="#" data-bind="visible : showMaxValue, value : maxValue"/>
+            </div>
+            <input type="button"  value="save" data-bind="click : saveFilter" class="btn"/>
+        </form>
+    </div>
+</div>
+<div class="row" data-bind="with : filter">
+    <div class="span9" data-bind="slideVisible : giftWrap, slideDuration : 600" >
+        <div data-bind="foreach : Conditions">
+            <label class="label span2" ><span data-bind="text : labelText"></span><a class="close" href="#" data-bind="click : reset">&times;</a></label>
+        </div>
+        <input type="button"   value="edit filter options" data-bind="click : editMode" class="btn"/>
+    </div>
+</div>
+
+<div  id="divConsole">
+    
+
+</div>
