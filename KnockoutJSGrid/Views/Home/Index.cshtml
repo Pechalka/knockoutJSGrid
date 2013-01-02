@@ -7,14 +7,20 @@
 }
 
 @section scripts{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/sammy-0.7.1.min.js")"></script>
+
     <script type="text/javascript" src="@Url.Content("~/Scripts/SimpleGrid.js")"></script>
     <script type="text/javascript">
 
-        function PageViewMode(url, grid_settings, filter) {
+        function PageViewMode(url, start_sort, filter) {
             var self = this;
             
             self.filterParams = ko.mapping.fromJS(filter);
-            self.grid = new Grid(url, grid_settings, self);
+            self.grid = new Grid(url, start_sort, self);
+            self.grid.go_to = function(page) {
+               window.location = "#" + page;
+            };
+
 
             self.filted = function() {
                 self.grid.refresh({ pageNumber : 1, filterParams : ko.toJS(self.filterParams) });
@@ -35,6 +41,14 @@
             var viewModel = new PageViewMode('@Url.Action("List")', @Html.ToJSON(Model.Sort), @Html.ToJSON(Model.Filter));
 
             ko.applyBindings(viewModel);
+
+
+            Sammy(function() {
+                this.get('#:page', function() {
+                    //alert(this.params.page);
+                    viewModel.grid.refresh({ pageNumber : this.params.page });
+                });
+            }).run();
         });
     </script>
 }

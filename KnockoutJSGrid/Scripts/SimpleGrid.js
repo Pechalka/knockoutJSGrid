@@ -1,20 +1,28 @@
 ﻿var Grid = function (url, sort, vm) {
     var self = this;
-    this.rows = ko.observableArray();
+    this.rows = ko.observableArray([]);
 
     this.$vm = vm;
+
+
 
     this.paging = {
         PageNumber: ko.observable(1),
         TotalPagesCount: ko.observable(0),
         next: function () {
             var pn = this.PageNumber();
-            if (pn < this.TotalPagesCount()) this.PageNumber(pn + 1);
+            if (pn < this.TotalPagesCount())
+                self.go_to(pn + 1);
         },
         back: function () {
             var pn = this.PageNumber();
-            if (pn > 1) this.PageNumber(pn - 1);
+            if (pn > 1) 
+                self.go_to(pn - 1);
         }
+    };
+
+    this.go_to = function (page) {
+        this.paging.PageNumber(page);
     };
 
     this.sorting = ko.mapping.fromJS(sort);
@@ -41,6 +49,10 @@
         }
     };
 
+    self.render = function (response) {
+        return response;
+    };
+
     self.refresh = function (data) {
         data = data || {};
 
@@ -55,6 +67,7 @@
             data: ko.toJSON(request),
             contentType: 'application/json',
             success: function (response) {
+                response = self.render(response);
                 self.rows(response.Data);
                 self.paging.PageNumber(response.Paging.PageNumber);
                 self.paging.TotalPagesCount(response.Paging.TotalPagesCount);

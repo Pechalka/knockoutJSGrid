@@ -110,6 +110,9 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="README.jQuery.vsdoc.txt" />
+    <Content Include="Scripts\sammy-0.7.1-vsdoc.js" />
+    <Content Include="Scripts\sammy-0.7.1.js" />
+    <Content Include="Scripts\sammy-0.7.1.min.js" />
     <Content Include="Scripts\SimpleGrid.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
